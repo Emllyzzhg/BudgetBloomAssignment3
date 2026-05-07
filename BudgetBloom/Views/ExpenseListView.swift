@@ -10,6 +10,7 @@ import SwiftUI
 struct ExpenseListView: View {
     
     @ObservedObject var viewModel: ExpenseViewModel
+    @State private var editMode: Bool = false
     
     @State private var selectedCategory: CategoryType? = nil
     
@@ -61,6 +62,7 @@ struct ExpenseListView: View {
                             )
                             .keyboardType(.decimalPad)
                             .frame(width: 80)
+                            .disabled(!editMode)
                         }
                     }
                 }
@@ -68,29 +70,55 @@ struct ExpenseListView: View {
                 
                 // Expense List
                 List {
-                    ForEach(filteredExpenses) { expense in
-                        HStack {
-                            Text(expense.category.gardenSymbol)
-                                .font(.title3)
+                    if editMode {
+                        ForEach(filteredExpenses) { expense in
+                            HStack {
+                                Text(expense.category.gardenSymbol)
+                                    .font(.title3)
                                 
-                            VStack(alignment: .leading) {
-                                Text(expense.title)
-                                    .font(.headline)
+                                VStack(alignment: .leading) {
+                                    Text(expense.title)
+                                        .font(.headline)
                                     
-                                Text(expense.category.rawValue)
-                                    .font(.subheadline)
-                                    .foregroundColor(.gray)
+                                    Text(expense.category.rawValue)
+                                        .font(.subheadline)
+                                        .foregroundColor(.gray)
+                                }
+                                
+                                Spacer()
+                                Text("$\(expense.amount, specifier: "%.2f")")
                             }
-                            
-                            Spacer()
-                            Text("$\(expense.amount, specifier: "%.2f")")
+                        }
+                        .onDelete(perform: deleteExpense)
+                    }
+                    else {
+                        ForEach(filteredExpenses) { expense in
+                            HStack {
+                                Text(expense.category.gardenSymbol)
+                                    .font(.title3)
+                                
+                                VStack(alignment: .leading) {
+                                    Text(expense.title)
+                                        .font(.headline)
+                                    
+                                    Text(expense.category.rawValue)
+                                        .font(.subheadline)
+                                        .foregroundColor(.gray)
+                                }
+                                
+                                Spacer()
+                                Text("$\(expense.amount, specifier: "%.2f")")
+                            }
                         }
                     }
-                    .onDelete(perform: deleteExpense)
                 }
             }
             .navigationTitle("Expenses")
-            .navigationBarItems(trailing: EditButton())
+            .toolbar {
+                Button(editMode ? "Done" : "Edit") {
+                    editMode.toggle()
+                }
+            }
         }
     }
     
