@@ -33,11 +33,11 @@ struct LoginView: View {
                 }
             }
             
-            NavigationLink("Login") {
-                PINView()
-            }
-            .padding(10)
-            .buttonStyle(.borderedProminent)
+//            NavigationLink("Login") {
+//                DashboardView(viewModel: )
+//            }
+//            .padding(10)
+//            .buttonStyle(.borderedProminent)
         }
         .padding()
     }
