@@ -2,7 +2,7 @@
 //  RootView.swift
 //  BudgetBloom
 //
-//  Created by Clarissa Tatang on 5/5/2026.
+//  Created by Clayton Cheung on 5/5/2026.
 //
 import SwiftUI
 
