@@ -9,6 +9,7 @@ import SwiftUI
 
 struct LoginView: View {
     
+    @ObservedObject var dbViewModel: ExpenseViewModel = ExpenseViewModel()
     @State private var name: String = ""
     @State private var password: String = ""
     
@@ -33,11 +34,11 @@ struct LoginView: View {
                 }
             }
             
-//            NavigationLink("Login") {
-//                DashboardView(viewModel: )
-//            }
-//            .padding(10)
-//            .buttonStyle(.borderedProminent)
+            NavigationLink("Login") {
+                DashboardView(viewModel: dbViewModel)
+            }
+            .padding(10)
+            .buttonStyle(.borderedProminent)
         }
         .padding()
     }
