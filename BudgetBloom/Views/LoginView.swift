@@ -14,20 +14,54 @@ struct LoginView: View {
     @State private var password: String = ""
     
     @State private var isVisible: Bool = false
-    @State private var hasPass: Bool = true
+    @AppStorage("savedPassword") private var savedPassword: String = ""
+    @State private var enterDash: Bool = false
+    @State private var incorrectPass: Bool = false
     
     var body: some View {
-        if !hasPass {
-            
+        if savedPassword.isEmpty {
+            VStack(spacing: 10) {
+                Image(systemName: "leaf.fill")
+                    .font(.system(size: 80))
+                    .foregroundColor(.green)
+                    .padding()
+
+                Text("Create a Password")
+                    .font(.title2)
+                    .padding()
+                
+                HStack {
+                    if isVisible {
+                        TextField("Password", text: $password)
+                    }
+                    else {
+                        SecureField("Password", text: $password)
+                    }
+                    
+                    Button(action: { isVisible.toggle() }) {
+                        Image(systemName: isVisible ? "eye.slash" : "eye")
+                            .foregroundColor(.gray)
+                    }
+                }
+
+                Button("Save Password") {
+                    savedPassword = password
+                    password = ""
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.green)
+            }
+            .padding()
         }
         else {
-            VStack(alignment: .center) {
+            VStack(alignment: .center, spacing: 10) {
                 Image(systemName: "leaf.fill")
                     .font(.system(size: 80))
                     .foregroundColor(.green)
                     .padding()
                 
                 Text("Budget Bloom")
+                    .font(.title2)
                     .padding()
                 
                 Text("Enter Password: ")
@@ -45,17 +79,34 @@ struct LoginView: View {
                     }
                 }
                 
-                NavigationLink("Login") {
-                    DashboardView(viewModel: dbViewModel)
+                Button("Login") {
+                    if password == savedPassword {
+                        enterDash = true
+                    }
+                    else {
+                        incorrectPass = true
+                    }
                 }
-                .padding(10)
+                .padding()
                 .buttonStyle(.borderedProminent)
+                .tint(.green)
+                .alert("Incorrect Password", isPresented: $incorrectPass) {
+                    Button("Retry", role: .cancel) {}
+                }
+                message: {
+                    Text("The password you entered is incorrect. Please try again.")
+                }
             }
             .padding()
+            .navigationDestination(isPresented: $enterDash) {
+                DashboardView(viewModel: dbViewModel)
+            }
         }
     }
 }
 
 #Preview {
-    LoginView()
+    NavigationStack {
+        LoginView()
+    }
 }
