@@ -139,6 +139,17 @@ struct DashboardView: View {
                             .cornerRadius(10)
                     }
                     .padding()
+                    
+                    NavigationLink(destination: SettingsView()) {
+                        Text("Settings")
+                            .font(.headline)
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(Color.red.opacity(0.1))
+                            .cornerRadius(10)
+                        
+                    }
+                    .padding()
                 }
                 .sheet(isPresented: $showAddExpense) {
                     AddExpenseView(viewModel: viewModel)
