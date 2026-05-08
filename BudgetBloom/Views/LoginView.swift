@@ -96,6 +96,12 @@ struct LoginView: View {
                 message: {
                     Text("The password you entered is incorrect. Please try again.")
                 }
+                
+                Button("Clear Password") { //only for testing purposes
+                    savedPassword = ""
+                    UserDefaults.standard.set(savedPassword, forKey: "password")
+                    password = ""
+                }
             }
             .padding()
             .navigationDestination(isPresented: $enterDash) {
