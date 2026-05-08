@@ -14,33 +14,45 @@ struct LoginView: View {
     @State private var password: String = ""
     
     @State private var isVisible: Bool = false
+    @State private var hasPass: Bool = true
     
     var body: some View {
-        VStack(alignment: .center) {
-            Text("Enter Login Details: ")
-            TextField("Username", text: $name)
+        if !hasPass {
             
-            HStack {
-                if isVisible {
-                    TextField("Password", text: $password)
-                }
-                else {
-                    SecureField("Password", text: $password)
+        }
+        else {
+            VStack(alignment: .center) {
+                Image(systemName: "leaf.fill")
+                    .font(.system(size: 80))
+                    .foregroundColor(.green)
+                    .padding()
+                
+                Text("Budget Bloom")
+                    .padding()
+                
+                Text("Enter Password: ")
+                HStack {
+                    if isVisible {
+                        TextField("Password", text: $password)
+                    }
+                    else {
+                        SecureField("Password", text: $password)
+                    }
+                    
+                    Button(action: { isVisible.toggle() }) {
+                        Image(systemName: isVisible ? "eye.slash" : "eye")
+                            .foregroundColor(.gray)
+                    }
                 }
                 
-                Button(action: { isVisible.toggle() }) {
-                    Image(systemName: isVisible ? "eye.slash" : "eye")
-                        .foregroundColor(.gray)
+                NavigationLink("Login") {
+                    DashboardView(viewModel: dbViewModel)
                 }
+                .padding(10)
+                .buttonStyle(.borderedProminent)
             }
-            
-            NavigationLink("Login") {
-                DashboardView(viewModel: dbViewModel)
-            }
-            .padding(10)
-            .buttonStyle(.borderedProminent)
+            .padding()
         }
-        .padding()
     }
 }
 

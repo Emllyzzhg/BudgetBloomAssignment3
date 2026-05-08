@@ -22,6 +22,7 @@ struct WelcomeView: View {
                 LoginView()
             }
             .buttonStyle(.borderedProminent)
+            .tint(.green)
         }
     }
 }
