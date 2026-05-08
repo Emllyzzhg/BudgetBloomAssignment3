@@ -19,7 +19,7 @@ struct LoginView: View {
     @State private var incorrectPass: Bool = false
     
     var body: some View {
-        if savedPassword.isEmpty {
+        if savedPassword.isEmpty { //if no password prompt to create one
             VStack(spacing: 10) {
                 Image(systemName: "leaf.fill")
                     .font(.system(size: 80))
@@ -54,7 +54,7 @@ struct LoginView: View {
             .padding()
         }
         else {
-            VStack(alignment: .center, spacing: 10) {
+            VStack(alignment: .center, spacing: 10) { //if there is a password login
                 Image(systemName: "leaf.fill")
                     .font(.system(size: 80))
                     .foregroundColor(.green)
