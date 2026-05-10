@@ -7,82 +7,228 @@
 
 import SwiftUI
 
+enum GoalFruit: String, CaseIterable, Identifiable {
+    case apple = "Apple 🍎"
+    case orange = "Orange 🍊"
+    case banana = "Banana 🍌"
+    case strawberry = "Strawberry 🍓"
+    case watermelon = "Watermelon 🍉"
+
+var id: String {
+        rawValue
+    }
+}
+
 struct SavingsGoalsView: View {
     
     @ObservedObject var viewModel: ExpenseViewModel
     @State private var title = ""
     @State private var target = ""
+    @State private var selectedFruit: GoalFruit = .apple
+    @State private var goalFruitAllocations: [UUID: GoalFruit] = [:]
+    @State private var showErrorAlert = false
+    @State private var errorMessage = ""
     
     var body: some View {
         
-        NavigationView {
-            
-            VStack(spacing: 20) {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
                 
                 Text("Savings Goals 🎯")
                     .font(.largeTitle)
                     .bold()
                 
-                // Input section
-                VStack(spacing: 12) {
-                    
-                    TextField("Goal (e.g. Laptop)", text: $title)
-                        .textFieldStyle(.roundedBorder)
-                    
-                    TextField("Target Amount", text: $target)
-                        .keyboardType(.decimalPad)
-                        .textFieldStyle(.roundedBorder)
-                    
-                    Button("Add Goal") {
-                        if let value = Double(target), !title.isEmpty {
-                            
-                            let goal = SavingsGoal(
-                                title: title,
-                                targetAmount: value,
-                                savedAmount: 0
-                            )
-                            
-                            viewModel.goals.append(goal)
-                            
-                            title = ""
-                            target = ""
-                        }
-                    }
-                    .buttonStyle(.borderedProminent)
-                }
-                .padding()
+                Text("Add a saving goal and choose a fruit ")
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
                 
-                // List of goals
-                List {
-                    ForEach(viewModel.goals) { goal in
-                        
-                        VStack(alignment: .leading, spacing: 6) {
-                            
-                            Text(goal.title)
-                                .font(.headline)
-                            
-                            Text("$\(goal.savedAmount, specifier: "%.2f") / \(goal.targetAmount, specifier: "%.2f")")
-                                .font(.subheadline)
-                                .foregroundColor(.gray)
-                            
-                            ProgressView(value: goal.savedAmount, total: goal.targetAmount)
-                        }
-                    }
-                }
+                addGoalSection
+                goalsSection
             }
             .padding()
         }
+        .background(Color(.systemGroupedBackground))
+        .navigationTitle("Savings Goals")
+        .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            loadFruitAllocations()
+        }
+        .alert("Invalid Input", isPresented: $showErrorAlert) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(errorMessage)
+        }
+    }
+    private var addGoalSection: some View {
+        
+        VStack(alignment: .leading, spacing: 14) {
+            
+            Text("Add New Goal")
+                .font(.headline)
+            
+            TextField("Name of Goal", text: $title)
+                .textFieldStyle(.roundedBorder)
+            
+            TextField("Saving Goal", text: $target)
+                .keyboardType(.decimalPad)
+                .textFieldStyle(.roundedBorder)
+            
+            HStack {
+                Text("Fruit Allocation : ")
+                
+                Spacer()
+                
+                Picker("Fruit Allocation", selection: $selectedFruit) {
+                    ForEach(GoalFruit.allCases) { fruit in
+                        Text(fruit.rawValue)
+                            .tag(fruit)
+                }
+                }
+                .pickerStyle(.menu)
+            }
+            
+            Button {
+                addSavingGoal()
+            } label: {
+                Text("Add Saving Goal")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .padding()
+        .background(Color(.systemBackground))
+        .cornerRadius(16)
+    }
+    
+    private var goalsSection: some View {
+        
+        VStack(alignment: .leading, spacing: 12) {
+            
+            Text("Your Goals")
+                .font(.headline)
+            
+            if viewModel.goals.isEmpty {
+                
+                VStack(spacing: 8) {
+                    Text("No goals yet")
+                        .font(.headline)
+                    
+                    Text("Add your first saving goal above.")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color(.systemBackground))
+                .cornerRadius(16)
+                
+            } else {
+                
+                ForEach(viewModel.goals) { goal in
+                    goalCard(goal)
+                }
+            }
+        }
+    }
+    
+    private func goalCard(_ goal: SavingsGoal) -> some View {
+        
+    VStack(alignment: .leading, spacing: 10) {
+            
+        HStack {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(goal.title)
+                    .font(.headline)
+                    
+        Text("$\(goal.savedAmount, specifier: "%.2f") / $\(goal.targetAmount, specifier: "%.2f")")
+                    .font(.subheadline)
+                        
+            }
+                
+            Spacer()
+            Text(fruitForGoal(goal).rawValue)
+                .font(.subheadline)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .background(Color(.systemGray6))
+                .cornerRadius(10)
+            }
+            
+            ProgressView(value: goal.savedAmount, total: goal.targetAmount)
+        }
+        .padding()
+        .background(Color(.systemBackground))
+        .cornerRadius(16)
+    }
+    
+    func addSavingGoal() {
+        guard !title.isEmpty else {
+            errorMessage = "Please enter a goal name"
+            showErrorAlert = true
+            return
+        }
+        guard let value = Double(target) else {
+            errorMessage = "Please enter a valid saving goal amount"
+            showErrorAlert = true
+            return
+        }
+        
+    guard value > 0 else {
+            errorMessage = "Saving goal must be greater than 0"
+            showErrorAlert = true
+            return
+        }
+        
+        let newGoal = SavingsGoal(
+            title: title,
+            targetAmount: value,
+            savedAmount: 0
+        )
+        
+        goalFruitAllocations[newGoal.id] = selectedFruit
+        saveFruitAllocations()
+        
+        viewModel.addGoal(newGoal)
+        
+        title = ""
+        target = ""
+        selectedFruit = .apple
+    }
+    
+    func fruitForGoal(_ goal: SavingsGoal) -> GoalFruit {
+        return goalFruitAllocations[goal.id] ?? .apple
+    }
+    
+    func saveFruitAllocations() {
+        
+        var savedDictionary: [String: String] = [:]
+        
+        for item in goalFruitAllocations {
+            savedDictionary[item.key.uuidString] = item.value.rawValue
+        }
+        
+        UserDefaults.standard.set(savedDictionary, forKey: "goalFruitAllocations")
+    }
+    
+    func loadFruitAllocations() {
+        
+        guard let savedDictionary = UserDefaults.standard.dictionary(forKey: "goalFruitAllocations") as? [String: String] else {
+            return
+        }
+        
+        var loadedDictionary: [UUID: GoalFruit] = [:]
+        
+        for item in savedDictionary {
+            if let uuid = UUID(uuidString: item.key),
+               let fruit = GoalFruit(rawValue: item.value) {
+                loadedDictionary[uuid] = fruit
+            }
+        }
+        
+        goalFruitAllocations = loadedDictionary
     }
 }
 
-#Preview {
-    let vm: ExpenseViewModel = ExpenseViewModel()
-    
-    vm.goals = [
-        SavingsGoal(title: "Laptop", targetAmount: 2000, savedAmount: 500),
-        SavingsGoal(title: "Holiday", targetAmount: 3000, savedAmount: 1200),
-        SavingsGoal(title: "Car", targetAmount: 10000, savedAmount: 2500)
-    ]
-    
-    return SavingsGoalsView(viewModel: vm)
-}
+
