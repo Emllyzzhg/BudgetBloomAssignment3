@@ -229,15 +229,17 @@ struct SavingsGoalsView: View {
         updatedGoals[index].savedAmount += amount
         viewModel.goals = updatedGoals
         
-        viewModel.income -= amount
-        viewModel.saveIncome()
+        let newExpense = Expense(
+            title: title,
+            amount: amount,
+            category: .savings,
+            emoji: ""
+        )
+        
+        viewModel.addExpense(newExpense)
         
         allocationAmounts[goal.id] = ""
     }
-    
-    
-    
-    
     
     func addSavingGoal() {
         guard !title.isEmpty else {
