@@ -230,7 +230,7 @@ struct SavingsGoalsView: View {
         viewModel.goals = updatedGoals
         
         let newExpense = Expense(
-            title: title,
+            title: goal.title,
             amount: amount,
             category: .savings,
             emoji: ""
