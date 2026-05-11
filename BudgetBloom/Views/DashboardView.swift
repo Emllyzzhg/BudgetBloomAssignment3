@@ -24,7 +24,7 @@ struct DashboardView: View {
                     Text("BudgetBloom")
                         .font(.largeTitle)
                         .bold()
-                        .padding(.top, 10)
+                        .padding(.bottom, 30)
                     ZStack {
                         Image(systemName: "tree.fill")
                             .font(.system(size: 275))
