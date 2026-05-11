@@ -26,7 +26,7 @@ struct DashboardView: View {
                         .padding(.top, 10)
                     
                     Image(systemName: "tree.fill")
-                        .font(.system(size: 250))
+                        .font(.system(size: 275))
                         .symbolRenderingMode(.multicolor)
                     
                     // Income Section
