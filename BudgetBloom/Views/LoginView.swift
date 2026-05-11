@@ -50,6 +50,7 @@ struct LoginView: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(.green)
+                .disabled(password.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             }
             .padding()
         }
@@ -90,9 +91,11 @@ struct LoginView: View {
                 .padding()
                 .buttonStyle(.borderedProminent)
                 .tint(.green)
+                .disabled(password.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 .alert("Incorrect Password", isPresented: $incorrectPass) {
                     Button("Retry", role: .cancel) {}
                 }
+                
                 message: {
                     Text("The password you entered is incorrect. Please try again.")
                 }
