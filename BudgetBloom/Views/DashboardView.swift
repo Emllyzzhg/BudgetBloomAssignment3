@@ -25,6 +25,10 @@ struct DashboardView: View {
                         .bold()
                         .padding(.top, 10)
                     
+                    Image(systemName: "tree.fill")
+                        .font(.system(size: 250))
+                        .symbolRenderingMode(.multicolor)
+                    
                     // Income Section
                     NavigationLink(destination: IncomeView(viewModel: viewModel)) {
                         VStack(spacing: 8) {
@@ -173,3 +177,6 @@ struct DashboardView: View {
     }
 }
 
+#Preview {
+    DashboardView(viewModel: ExpenseViewModel())
+}
