@@ -228,6 +228,7 @@ struct SavingsGoalsView: View {
         var updatedGoals = viewModel.goals
         updatedGoals[index].savedAmount += amount
         viewModel.goals = updatedGoals
+        viewModel.saveGoals()
         
         let newExpense = Expense(
             title: goal.title,
