@@ -25,7 +25,8 @@ struct DashboardView: View {
                         .font(.largeTitle)
                         .bold()
                         .padding(.bottom, 30)
-                    ZStack {
+                    
+                    ZStack { //Tree with fruits
                         Image(systemName: "tree.fill")
                             .font(.system(size: 275))
                             .symbolRenderingMode(.multicolor)
