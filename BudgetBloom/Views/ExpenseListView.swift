@@ -10,7 +10,6 @@ import SwiftUI
 struct ExpenseListView: View {
     
     @ObservedObject var viewModel: ExpenseViewModel
-    @State private var editMode: Bool = false
     
     @State private var selectedCategory: CategoryType? = nil
     
@@ -27,7 +26,7 @@ struct ExpenseListView: View {
         
         NavigationView {
             
-            VStack {
+            VStack(spacing: 15) {
                 
                 // Filter Picker
                 Picker("Filter", selection: $selectedCategory) {
@@ -41,28 +40,48 @@ struct ExpenseListView: View {
                 }
                 .pickerStyle(.segmented)
                 .padding()
+                .cornerRadius(15)
+                .padding(.horizontal)
                 
                 // Budget
-                Section(header: Text("Set Budget")) {
-                    ForEach(CategoryType.allCases, id: \.self) { category in
-                        HStack {
-                            Text(category.rawValue)
-                            Spacer()
-                            TextField(
-                                "0",
-                                value: Binding(
-                                    get: {
-                                        viewModel.budgets[category] ?? 0
-                                    },
-                                    set: { newValue in
-                                        viewModel.setBudget(for: category, amount: newValue)
-                                    }
-                                ),
-                                formatter: NumberFormatter()
-                            )
-                            .keyboardType(.decimalPad)
-                            .frame(width: 80)
-                            .disabled(!editMode)
+                Section(header:
+                    Text("Set Budget")
+                        .font(.headline)
+                        .foregroundColor(.green)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal)
+                ) {
+                    VStack(spacing: 12) {
+                        ForEach(CategoryType.allCases, id: \.self) { category in
+                            HStack {
+                                Text(category.rawValue)
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                                
+                                Spacer()
+                                
+                                TextField(
+                                    "0",
+                                    value: Binding(
+                                        get: {
+                                            viewModel.budgets[category] ?? 0
+                                        },
+                                        set: { newValue in
+                                            viewModel.setBudget(for: category, amount: newValue)
+                                        }
+                                    ),
+                                    formatter: NumberFormatter()
+                                )
+                                .keyboardType(.decimalPad)
+                                .frame(width: 80)
+                                .padding(8)
+                                .background(Color.white)
+                                .cornerRadius(10)
+                                .multilineTextAlignment(.center)
+                            }
+                            .padding()
+                            .background(Color.green.opacity(0.10))
+                            .cornerRadius(15)
                         }
                     }
                 }
@@ -70,55 +89,42 @@ struct ExpenseListView: View {
                 
                 // Expense List
                 List {
-                    if editMode {
-                        ForEach(filteredExpenses) { expense in
-                            HStack {
-                                Text(expense.category.gardenSymbol)
-                                    .font(.title3)
+                    ForEach(filteredExpenses) { expense in
+                        HStack(spacing: 12) {
+                            
+                            Text(expense.emoji)
+                                .font(.title2)
+                                .frame(width: 40, height: 40)
+                                .cornerRadius(12)
+                            
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(expense.title)
+                                    .font(.headline)
                                 
-                                VStack(alignment: .leading) {
-                                    Text(expense.title)
-                                        .font(.headline)
-                                    
-                                    Text(expense.category.rawValue)
-                                        .font(.subheadline)
-                                        .foregroundColor(.gray)
-                                }
-                                
-                                Spacer()
-                                Text("$\(expense.amount, specifier: "%.2f")")
+                                Text(expense.category.rawValue)
+                                    .font(.subheadline)
+                                    .foregroundColor(.gray)
                             }
+                            
+                            Spacer()
+                            
+                            Text("$\(expense.amount, specifier: "%.2f")")
+                                .font(.headline)
                         }
-                        .onDelete(perform: deleteExpense)
+                        .padding(.vertical, 6)
                     }
-                    else {
-                        ForEach(filteredExpenses) { expense in
-                            HStack {
-                                Text(expense.category.gardenSymbol)
-                                    .font(.title3)
-                                
-                                VStack(alignment: .leading) {
-                                    Text(expense.title)
-                                        .font(.headline)
-                                    
-                                    Text(expense.category.rawValue)
-                                        .font(.subheadline)
-                                        .foregroundColor(.gray)
-                                }
-                                
-                                Spacer()
-                                Text("$\(expense.amount, specifier: "%.2f")")
-                            }
-                        }
-                    }
+                    .onDelete(perform: deleteExpense)
                 }
+                .listStyle(.insetGrouped)
             }
             .navigationTitle("Expenses")
-            .toolbar {
-                Button(editMode ? "Done" : "Edit") {
-                    editMode.toggle()
+            .navigationBarItems(
+                leading: EditButton(),
+                trailing: NavigationLink(destination: AddExpenseView(viewModel: viewModel)) {
+                    Image(systemName: "plus")
+                        .foregroundColor(.green)
                 }
-            }
+            )
         }
     }
     
@@ -127,21 +133,24 @@ struct ExpenseListView: View {
         for index in offsets {
             let expense = filteredExpenses[index]
             viewModel.deleteExpense(expense)
-            }
         }
+    }
 }
 
-
 #Preview {
-    let vm = ExpenseViewModel()
+    let vm: ExpenseViewModel = {
+        let vm = ExpenseViewModel()
+        
+        vm.income = 2500
+        
+        vm.expenses = [
+            Expense(title: "Lunch", amount: 15.50, category: .living, emoji: "🍓"),
+            Expense(title: "Bus", amount: 5.20, category: .lifestyle, emoji: "🍏"),
+            Expense(title: "Rent", amount: 2000, category: .living, emoji: "🥭")
+        ]
+        
+        return vm
+    }()
     
-    vm.income = 2500
-    
-    vm.expenses = [
-        Expense(title: "Lunch", amount: 15.50, category: .living),
-        Expense(title: "Bus", amount: 5.20, category: .lifestyle),
-        Expense(title: "Rent", amount: 2000, category: .living)
-    ]
-    
-    return ExpenseListView(viewModel: vm)
+    ExpenseListView(viewModel: vm)
 }

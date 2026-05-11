@@ -15,8 +15,11 @@ struct AddExpenseView: View {
     @State private var title: String = ""
     @State private var amount: String = ""
     @State private var selectedCategory: CategoryType = CategoryType.living
+    @State private var selectedEmoji: String = "🍓"
     @State private var showErrorAlert = false
     @State private var errorMessage = ""
+    
+    let emojiOptions = ["🍓", "🍏", "🥭", "🍈", "🥝", "🍍", "🍊", "🍌"]
     
     var body: some View {
         
@@ -42,6 +45,32 @@ struct AddExpenseView: View {
                         }
                     }
                 }
+                
+                // Emoji/Fruit selection
+                Section(header: Text("Choose Fruit Seed")) {
+                    Picker("Fruit Seed", selection: $selectedEmoji) {
+                        ForEach(emojiOptions, id: \.self) { emoji in
+                            Text(emoji)
+                                .tag(emoji)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                }
+                
+                Section {
+                    HStack {
+                        
+                        VStack(spacing: 8) {
+                            Image(systemName: "leaf.fill")
+                                .font(.largeTitle)
+                                .foregroundColor(.green)
+                        }
+                        
+                        Text("Add An Expense to Grow Your Tree")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+                }
             }
             .toolbar {
                 
@@ -50,6 +79,7 @@ struct AddExpenseView: View {
                     Button("Cancel") {
                         dismiss()
                     }
+                    .foregroundColor(.red)
                 }
                 
                 // Save button
@@ -57,9 +87,10 @@ struct AddExpenseView: View {
                     Button("Save") {
                         saveEntry()
                     }
+                    .foregroundColor(.green)
                 }
             }
-            .navigationTitle("Add Entry")
+            .navigationTitle("Add Expense")
             
             .alert("Invalid Input", isPresented: $showErrorAlert) {
                 Button("OK", role: .cancel) { }
@@ -78,23 +109,27 @@ struct AddExpenseView: View {
             showErrorAlert = true
             return
         }
+        
         // Checks if input is a Double
         guard let amountValue = Double(amount) else {
             errorMessage = "Please enter a valid amount"
             showErrorAlert = true
             return
         }
+        
         // Checks for valid positive input
         guard amountValue > 0 else {
             errorMessage = "Amount must be greater than 0"
             showErrorAlert = true
             return
         }
+        
         // Save expense
         let newExpense = Expense(
             title: title,
             amount: amountValue,
-            category: selectedCategory
+            category: selectedCategory,
+            emoji: selectedEmoji
         )
         
         viewModel.addExpense(newExpense)

@@ -13,4 +13,5 @@ struct Expense: Identifiable, Codable {
     var amount: Double
     var category: CategoryType
     var date: Date = Date()
+    var emoji: String
 }
