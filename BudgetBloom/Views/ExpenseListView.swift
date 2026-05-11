@@ -112,6 +112,7 @@ struct ExpenseListView: View {
                                 .font(.headline)
                         }
                         .padding(.vertical, 6)
+                        .deleteDisabled(expense.category == .savings)
                     }
                     .onDelete(perform: deleteExpense)
                 }
