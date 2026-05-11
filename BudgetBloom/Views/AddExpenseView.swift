@@ -15,11 +15,11 @@ struct AddExpenseView: View {
     @State private var title: String = ""
     @State private var amount: String = ""
     @State private var selectedCategory: CategoryType = CategoryType.living
-    @State private var selectedEmoji: String = "🍓"
+    @State private var selectedEmoji: String = ""
     @State private var showErrorAlert = false
     @State private var errorMessage = ""
     
-    let emojiOptions = ["🍓", "🍏", "🥭", "🍈", "🥝", "🍍", "🍊", "🍌"]
+    let emojiOptions = [" 🛋️", "🍕", "🏃","🚙","🏦","🚑","💳" ]
     
     var body: some View {
         
@@ -46,8 +46,8 @@ struct AddExpenseView: View {
                     }
                 }
                 
-                // Emoji/Fruit selection
-                Section(header: Text("Choose Fruit Seed")) {
+                // Emoji Selection
+                Section(header: Text("Icon Selection")) {
                     Picker("Fruit Seed", selection: $selectedEmoji) {
                         ForEach(emojiOptions, id: \.self) { emoji in
                             Text(emoji)
@@ -55,21 +55,7 @@ struct AddExpenseView: View {
                         }
                     }
                     .pickerStyle(.segmented)
-                }
-                
-                Section {
-                    HStack {
-                        
-                        VStack(spacing: 8) {
-                            Image(systemName: "leaf.fill")
-                                .font(.largeTitle)
-                                .foregroundColor(.green)
-                        }
-                        
-                        Text("Add An Expense to Grow Your Tree")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    }
+    
                 }
             }
             .toolbar {
