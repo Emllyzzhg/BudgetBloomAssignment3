@@ -59,6 +59,7 @@ struct SavingsGoalsView: View {
             Text(errorMessage)
         }
     }
+    
     private var addGoalSection: some View {
         
         VStack(alignment: .leading, spacing: 14) {
@@ -82,7 +83,7 @@ struct SavingsGoalsView: View {
                     ForEach(GoalFruit.allCases) { fruit in
                         Text(fruit.rawValue)
                             .tag(fruit)
-                }
+                    }
                 }
                 .pickerStyle(.menu)
             }
@@ -142,12 +143,13 @@ struct SavingsGoalsView: View {
                 Text(goal.title)
                     .font(.headline)
                     
-        Text("$\(goal.savedAmount, specifier: "%.2f") / $\(goal.targetAmount, specifier: "%.2f")")
+                Text("$\(goal.savedAmount, specifier: "%.2f") / $\(goal.targetAmount, specifier: "%.2f")")
                     .font(.subheadline)
                         
             }
                 
             Spacer()
+            
             Text(fruitForGoal(goal).rawValue)
                 .font(.subheadline)
                 .padding(.horizontal, 10)
@@ -175,7 +177,7 @@ struct SavingsGoalsView: View {
             return
         }
         
-    guard value > 0 else {
+        guard value > 0 else {
             errorMessage = "Saving goal must be greater than 0"
             showErrorAlert = true
             return

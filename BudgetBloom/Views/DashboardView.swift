@@ -11,6 +11,7 @@ struct DashboardView: View {
     
     @ObservedObject var viewModel: ExpenseViewModel
     @State private var showAddExpense = false
+    @State private var goalFruitAllocations: [UUID: GoalFruit] = [:]
     
     var body: some View {
         NavigationView {
@@ -24,10 +25,19 @@ struct DashboardView: View {
                         .font(.largeTitle)
                         .bold()
                         .padding(.top, 10)
-                    
-                    Image(systemName: "tree.fill")
-                        .font(.system(size: 275))
-                        .symbolRenderingMode(.multicolor)
+                    ZStack {
+                        Image(systemName: "tree.fill")
+                            .font(.system(size: 275))
+                            .symbolRenderingMode(.multicolor)
+                        
+                        ForEach(Array(viewModel.goals.enumerated()), id: \.element.id) { index, goal in
+                            let progress = min(goal.savedAmount / goal.targetAmount, 1.0)
+                            
+                            FruitView(fruit: fruitForGoal(goal), progress: progress)
+                                .offset(fruitPosition(for: index))
+                        }
+                    }
+                    .frame(height: 320)
                     
                     // Income Section
                     NavigationLink(destination: IncomeView(viewModel: viewModel)) {
@@ -174,6 +184,35 @@ struct DashboardView: View {
                 AddExpenseView(viewModel: viewModel)
             }
         }
+    }
+    
+    func fruitPosition(for index: Int) -> CGSize {
+        let positions: [CGSize] = [
+            CGSize(width: -70, height: -80),
+            CGSize(width: 60, height: -100),
+            CGSize(width: -40, height: -20),
+            CGSize(width: 80, height: -10),
+            CGSize(width: 0, height: -130),
+            CGSize(width: -90, height: 20),
+            CGSize(width: 100, height: 40)
+        ]
+        
+        return positions[index % positions.count]
+    }
+    
+    func fruitForGoal(_ goal: SavingsGoal) -> GoalFruit {
+        guard let savedDictionary = UserDefaults.standard.value(forKey: "goalFruitAllocations") as? [String: String]
+        else {
+            return .apple
+        }
+        
+        guard let fruitRawValue = savedDictionary[goal.id.uuidString],
+              let fruit = GoalFruit(rawValue: fruitRawValue)
+        else {
+            return .apple
+        }
+        
+        return fruit
     }
 }
 
