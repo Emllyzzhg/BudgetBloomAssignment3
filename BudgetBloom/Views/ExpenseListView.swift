@@ -145,7 +145,7 @@ struct ExpenseListView: View {
         
         vm.expenses = [
             Expense(title: "Lunch", amount: 15.50, category: .living, emoji: "🍕"),
-            Expense(title: "Bus", amount: 5.20, category: .lifestyle, emoji: "🚙"),
+            Expense(title: "Gas", amount: 50, category: .lifestyle, emoji: "🚙"),
             Expense(title: "Rent", amount: 2000, category: .living, emoji: "🛋️")
         ]
         
