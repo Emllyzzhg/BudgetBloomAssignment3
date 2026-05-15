@@ -15,7 +15,7 @@ Assessment Task 3 – Group Project
 | Emily | 11267440 | Initial app architecture, Swift file blueprint, project structure, application planning |
 | Clayton | 24505392 | Reactive garden elements, Login/Register system, Persistent data storage |
 | Kenneth | 24956195 | Savings goals, Income view |
-| Aiden |  | Expense list view, Add expense view |
+| Aiden | 26001901 | Expense list view, Add expense view |
 
 ---
 
